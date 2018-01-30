@@ -326,15 +326,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   
   BOOL isJSNavigation = [scheme isEqualToString:RCTJSNavigationScheme];
 
-  // handle mailto and tel schemes
-  if ([scheme isEqualToString:@"mailto"] || [scheme isEqualToString:@"tel"]) {
-    if ([app canOpenURL:url]) {
-      [app openURL:url];
-      decisionHandler(WKNavigationActionPolicyCancel);
-      return;
-    }
+  // Let the app open all the other schemes, ie. tel, mailto, app-links...
+  if (!isJSNavigation && ![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"] && ![scheme isEqualToString:@"data"]) {
+    [app openURL:url];
+    decisionHandler(WKNavigationActionPolicyCancel);
+    return;
   }
-  
+
   // skip this for the JS Navigation handler
   if (!isJSNavigation && _onShouldStartLoadWithRequest) {
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];

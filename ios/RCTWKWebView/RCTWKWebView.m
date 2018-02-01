@@ -295,6 +295,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   NSString* scheme = url.scheme;
   
   BOOL isJSNavigation = [scheme isEqualToString:RCTJSNavigationScheme];
+
+  // Let the app open all the other schemes, ie. tel, mailto, app-links...
+  if (!isJSNavigation && ![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"] && ![scheme isEqualToString:@"data"]) {
+    [app openURL:url];
+    decisionHandler(WKNavigationActionPolicyCancel);
+    return;
+  }
   
   // skip this for the JS Navigation handler
   if (!isJSNavigation && _onShouldStartLoadWithRequest) {

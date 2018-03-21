@@ -66,6 +66,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     config.userContentController = userController;
     
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
+    if #available(iOS 11.0, *) {
+      _webView.scrollView.contentInsetAdjustmentBehavior = .never;
+    }
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];

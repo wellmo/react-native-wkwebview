@@ -68,6 +68,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
+    /*
+     * This fixes a bug in iOS 11 where height:100% does not fill up the
+     * whole screen, but instead leaves a gap the size of the safe area
+     * at the bottom. It effecitely is the same as having viewport-fit=cover
+     * in the HTML (which is generally what we want to use anyway).
+     *
+     * See https://stackoverflow.com/a/49404965/412896
+     */
+    if (@available(iOS 11.0, *)) {
+      _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:_webView];
   }
